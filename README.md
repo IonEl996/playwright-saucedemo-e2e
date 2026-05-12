@@ -28,12 +28,14 @@ A scalable and maintainable End-to-End (E2E) automation framework built with Pla
 ## 🛠️ Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/IonEl996/playwright-saucedemo-e2e.git
    cd playwright-saucedemo-e2e
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
@@ -63,26 +65,31 @@ playwright-saucedemo-e2e/
 ## 🧪 Running Tests
 
 ### **Run All Tests**
+
 ```bash
 npm test
 ```
 
 ### **Run Tests in UI Mode**
+
 ```bash
 npm run test:ui
 ```
 
 ### **Run Tests in Debug Mode**
+
 ```bash
 npm run test:debug
 ```
 
 ### **Run Specific Test File**
+
 ```bash
 npx playwright test tests/e2e/login.spec.ts
 ```
 
 ### **Run Tests with Different Browsers**
+
 ```bash
 npx playwright test --project=chromium
 npx playwright test --project=firefox
@@ -98,6 +105,7 @@ npx playwright show-report
 ```
 
 The report includes:
+
 - Test execution results
 - Screenshots of failures
 - Video recordings (when enabled)
@@ -109,6 +117,7 @@ The report includes:
 ### **Playwright Configuration** (`playwright.config.ts`)
 
 Key features configured:
+
 - Target URL: `https://www.saucedemo.com`
 - Parallel execution enabled
 - HTML reporting
@@ -118,6 +127,7 @@ Key features configured:
 ### **TypeScript Configuration** (`tsconfig.json`)
 
 Strict TypeScript setup with:
+
 - ES2020 target
 - Modern module resolution
 - Strict type checking
@@ -135,15 +145,15 @@ Strict TypeScript setup with:
 ### **Basic Test Example**
 
 ```typescript
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test('should login successfully', async ({ page }) => {
+test("should login successfully", async ({ page }) => {
   // Navigate to login page
-  await page.goto('https://www.saucedemo.com');
-  
+  await page.goto("https://www.saucedemo.com");
+
   // Verify page title
   await expect(page).toHaveTitle(/Swag Labs/);
-  
+
   // Add your test logic here
 });
 ```
@@ -175,16 +185,16 @@ export class LoginPage {
 }
 
 // tests/login.spec.ts
-import { test } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
+import { test } from "@playwright/test";
+import { LoginPage } from "../pages/LoginPage";
 
-test('successful login flow', async ({ page }) => {
+test("successful login flow", async ({ page }) => {
   const loginPage = new LoginPage(page);
-  
-  await page.goto('https://www.saucedemo.com');
-  await loginPage.login('standard_user', 'secret_sauce');
-  
-  // Add assertions here
+
+  await page.goto("https://www.saucedemo.com");
+  await loginPage.login("standard_user", "secret_sauce");
+
+  // Add more assertions here
 });
 ```
 
