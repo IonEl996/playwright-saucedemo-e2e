@@ -1,0 +1,32 @@
+{
+  // --- LINTING & FORMATTING (The Clean Code Gatekeeper) ---
+  "eslint.experimental.useFlatConfig": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // --- PLAYWRIGHT SPECIFIC (Developer Experience) ---
+  "playwright.reuseBrowser": true, 
+  "testing.openTesting": "neverOpen", // Prevents the sidebar from jumping open on every run
+  "testing.automaticallyOpenPeekView": "failure", // Only show the code-level error if it fails
+
+  // --- WORKSPACE CLEANLINESS ---
+  "files.exclude": {
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/playwright-report": true,
+    "**/test-results": true,
+    "**/.playwright": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/playwright-report": true,
+    "**/test-results": true
+  },
+
+  // --- TYPESCRIPT PRECISION ---
+  /* "typescript.tsdk.path": "node_modules/typescript/lib", // Forces VS Code to use the project's TS version
+  "typescript.promptToUseWorkspaceVersion": true */
+}
