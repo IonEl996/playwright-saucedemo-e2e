@@ -14,4 +14,12 @@ export class LoginPage {
   get loginButton() {
     return this.page.locator('[data-test="login-button"]');
   }
+
+  get errorMessageContainer() {
+    return this.page.locator('[data-test="error"]');
+  }
+
+  get errorCloseButton() {
+    return this.page.locator('[data-test="error-button"]');
+  }
 }

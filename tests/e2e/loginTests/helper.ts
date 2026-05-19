@@ -1,18 +1,26 @@
-import { expect, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 import { PO } from "../../../src/fixtures/pageObjects.ts";
 import { ENV } from "../../../src/utils/env.ts";
 import { Context } from "node:vm";
 
+interface LoginCredentials {
+  username: string | null;
+  password: string | null;
+}
+
 export function loginHelpers(po: PO, page: Page) {
   const loginWithUser = async (
     po: PO,
-    username: string,
-    password: string,
+    credentials: LoginCredentials,
   ): Promise<void> => {
-    await po.loginPg.usernameInputField.click();
-    await po.loginPg.usernameInputField.fill(username);
-    await po.loginPg.passwordInputField.click();
-    await po.loginPg.passwordInputField.fill(password);
+    if (credentials.username !== null) {
+      await po.loginPg.usernameInputField.click();
+      await po.loginPg.usernameInputField.fill(credentials.username);
+    }
+    if (credentials.password !== null) {
+      await po.loginPg.passwordInputField.click();
+      await po.loginPg.passwordInputField.fill(credentials.password);
+    }
     await po.loginPg.loginButton.click();
   };
 
@@ -52,11 +60,28 @@ export function loginHelpers(po: PO, page: Page) {
     expect(sessionCookie).toBeUndefined();
   };
 
+  const checkErrorMessages = async (
+    page: Page,
+    errorMessage: string,
+  ): Promise<void> => {
+    const errorMsg = po.loginPg.errorMessageContainer;
+    await expect(errorMsg).toBeVisible();
+    await expect(errorMsg).toHaveText(errorMessage, { ignoreCase: true });
+  };
+
+  const clearField = async (page: Page, locator: Locator): Promise<void> => {
+    await locator.click();
+    await locator.press("ControlOrMeta+A");
+    await locator.clear();
+  };
+
   return {
     loginWithUser,
     assertLoginSuccessful,
     logout,
     checkLoginCookie,
     checkCookieGetsDeletedOnLogout,
+    checkErrorMessages,
+    clearField,
   };
 }

@@ -25,6 +25,7 @@
     "**/playwright-report": true,
     "**/test-results": true
   },
+  "testing.automaticallyOpenTestResults": "neverOpen",
 
   // --- TYPESCRIPT PRECISION ---
   /* "typescript.tsdk.path": "node_modules/typescript/lib", // Forces VS Code to use the project's TS version
