@@ -2,6 +2,7 @@
 ## Types of changes
 - [ ] Bug fix
 - [ ] New feature
+- [ ] New test
 - [ ] Documentation update
 
 ## Checklist
