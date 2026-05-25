@@ -1,4 +1,5 @@
 import { loginHelpers } from "./helper.ts";
+import { loginWithUser } from "../../../src/utils/auth.ts";
 import { navigateToHomepage } from "../../../src/utils/navigation.ts";
 import { ENV } from "../../../src/utils/env.ts";
 import { test } from "../../../src/fixtures/pageObjects.ts";
@@ -32,20 +33,20 @@ test.describe("Log in functional tests", () => {
 
   test("Log in/out with a standard user", async ({ page, po, context }) => {
     const loginPg = loginHelpers(po, page);
-    const dashPg = loginHelpers(po, page);
+    const shopPg = loginHelpers(po, page);
 
-    await loginPg.loginWithUser(po, {
+    await loginWithUser(po, {
       username: ENV.E2E_STANDARD_USER,
       password: ENV.E2E_ALL_USER_PSWD,
     });
-    await loginPg.assertLoginSuccessful(page);
+    await loginPg.assertLoginSuccessful(po, page);
     await loginPg.checkLoginCookie(
       page,
       context,
       testdata.cookies.SESSION_COOKIE,
       testdata.cookies.SESSION_COOKIE_VALUE.STANDARD_USER,
     );
-    await dashPg.logout(po);
+    await shopPg.logout(po);
     await loginPg.checkCookieGetsDeletedOnLogout(
       page,
       context,
@@ -55,20 +56,20 @@ test.describe("Log in functional tests", () => {
 
   test("Log in with a problem user", async ({ page, po, context }) => {
     const loginPg = loginHelpers(po, page);
-    const dashPg = loginHelpers(po, page);
+    const shopPg = loginHelpers(po, page);
 
-    await loginPg.loginWithUser(po, {
+    await loginWithUser(po, {
       username: ENV.E2E_PROBLEM_USER,
       password: ENV.E2E_ALL_USER_PSWD,
     });
-    await loginPg.assertLoginSuccessful(page);
+    await loginPg.assertLoginSuccessful(po, page);
     await loginPg.checkLoginCookie(
       page,
       context,
       testdata.cookies.SESSION_COOKIE,
       testdata.cookies.SESSION_COOKIE_VALUE.PROBLEM_USER,
     );
-    await dashPg.logout(po);
+    await shopPg.logout(po);
     await loginPg.checkCookieGetsDeletedOnLogout(
       page,
       context,
@@ -78,9 +79,9 @@ test.describe("Log in functional tests", () => {
 
   test("Log in with performance glitch user", async ({ page, po, context }) => {
     const loginPg = loginHelpers(po, page);
-    const dashPg = loginHelpers(po, page);
+    const shopPg = loginHelpers(po, page);
 
-    await loginPg.loginWithUser(po, {
+    await loginWithUser(po, {
       username: ENV.E2E_PERFORMANCE_USER,
       password: ENV.E2E_ALL_USER_PSWD,
     });
@@ -90,7 +91,7 @@ test.describe("Log in functional tests", () => {
       testdata.cookies.SESSION_COOKIE,
       testdata.cookies.SESSION_COOKIE_VALUE.PERFORMANCE_USER,
     );
-    await dashPg.logout(po);
+    await shopPg.logout(po);
     await loginPg.checkCookieGetsDeletedOnLogout(
       page,
       context,
@@ -100,9 +101,9 @@ test.describe("Log in functional tests", () => {
 
   test("Log in with error user", async ({ page, po, context }) => {
     const loginPg = loginHelpers(po, page);
-    const dashPg = loginHelpers(po, page);
+    const shopPg = loginHelpers(po, page);
 
-    await loginPg.loginWithUser(po, {
+    await loginWithUser(po, {
       username: ENV.E2E_ERROR_USER,
       password: ENV.E2E_ALL_USER_PSWD,
     });
@@ -112,7 +113,7 @@ test.describe("Log in functional tests", () => {
       testdata.cookies.SESSION_COOKIE,
       testdata.cookies.SESSION_COOKIE_VALUE.ERROR_USER,
     );
-    await dashPg.logout(po);
+    await shopPg.logout(po);
     await loginPg.checkCookieGetsDeletedOnLogout(
       page,
       context,
@@ -122,9 +123,9 @@ test.describe("Log in functional tests", () => {
 
   test("Log in with visual user", async ({ page, po, context }) => {
     const loginPg = loginHelpers(po, page);
-    const dashPg = loginHelpers(po, page);
+    const shopPg = loginHelpers(po, page);
 
-    await loginPg.loginWithUser(po, {
+    await loginWithUser(po, {
       username: ENV.E2E_VISUAL_USER,
       password: ENV.E2E_ALL_USER_PSWD,
     });
@@ -134,7 +135,7 @@ test.describe("Log in functional tests", () => {
       testdata.cookies.SESSION_COOKIE,
       testdata.cookies.SESSION_COOKIE_VALUE.VISUAL_USER,
     );
-    await dashPg.logout(po);
+    await shopPg.logout(po);
     await loginPg.checkCookieGetsDeletedOnLogout(
       page,
       context,
@@ -145,19 +146,19 @@ test.describe("Log in functional tests", () => {
   test("Log in with missing credentials", async ({ page, po }) => {
     const loginPg = loginHelpers(po, page);
 
-    await loginPg.loginWithUser(po, {
+    await loginWithUser(po, {
       username: null,
       password: ENV.E2E_ALL_USER_PSWD,
     });
     await loginPg.checkErrorMessages(page, testdata.messages.MISSING_USERNAME);
     await loginPg.clearField(page, po.loginPg.passwordInputField);
-    await loginPg.loginWithUser(po, {
+    await loginWithUser(po, {
       username: ENV.E2E_STANDARD_USER,
       password: null,
     });
     await loginPg.checkErrorMessages(page, testdata.messages.MISSING_PASSWORD);
     await loginPg.clearField(page, po.loginPg.usernameInputField);
-    await loginPg.loginWithUser(po, {
+    await loginWithUser(po, {
       username: null,
       password: null,
     });
@@ -167,7 +168,7 @@ test.describe("Log in functional tests", () => {
   test("Log in with locked out user", async ({ page, po }) => {
     const loginPg = loginHelpers(po, page);
 
-    await loginPg.loginWithUser(po, {
+    await loginWithUser(po, {
       username: ENV.E2E_LOCKED_USER,
       password: ENV.E2E_ALL_USER_PSWD,
     });

@@ -4,7 +4,9 @@
   "description": "A scalable End-to-End (E2E) automation framework built with Playwright, TypeScript. Implements Page Object Model (POM) and automated reporting.",
   "main": "index.js",
   "scripts": {
-    "test": "playwright test",
+    "test:chromium": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:safari": "playwright test --project=webkit",
     "test:ui": "playwright test --ui",
     "test:debug": "playwright test --debug",
     "prepare": "husky",

@@ -158,7 +158,45 @@ test("should login successfully", async ({ page }) => {
 });
 ```
 
+### **Fixture example**
+
+We're using a fixture as a centralized provider that follows Playwright's fixture pattern to supply page objects to tests: **_pageObject.ts_**.
+
+What it does:
+
+1. Creates a custom test fixture by extending Playwright's base test object
+2. Instantiates all page objects with the current test's page instance
+3. Provides a single po (Page Object) interface to access all page objects
+
+Architecture benefits:
+
+1. Single source of access: Tests import just the fixture instead of individual page classes
+2. Automatic initialization: Each test gets fresh page objects with the correct page instance
+3. Type safety: TypeScript ensures all page objects are available through the po interface
+4. Centralized management: Easy to add new page objects in one place
+
+```typescript
+import { test as base } from "@playwright/test";
+import { LoginPage } from "../pages/LoginPage.ts";
+
+export type PO = {
+  loginPg: LoginPage;
+};
+
+// Extend base test with a `po` fixture that wires real Playwright Page per test.
+export const test = base.extend<{ po: PO }>({
+  po: async ({ page }, use) => {
+    const po: PO = {
+      loginPg: new LoginPage(page),
+    };
+    await use(po);
+  },
+});
+```
+
 ### **Page Object Model Example**
+
+We're using pages to host all the locators present in that particular page. All methods (actions, assertions, etc...) will be hosted in a dedicated helper file as shown below.
 
 ```typescript
 // pages/LoginPage.ts
@@ -176,17 +214,40 @@ export class LoginPage {
   get loginButton() {
     return this.page.locator('[data-test="login-button"]');
   }
-
-  async login(username: string, password: string) {
-    await this.usernameInput.fill(username);
-    await this.passwordInput.fill(password);
-    await this.loginButton.click();
-  }
 }
+```
 
+⚠️ **Warning!**
+
+**Make sure to add each new page to _pageObjects.ts_ fixture.**
+
+### **Helper File Example**
+
+We're using a helper file **_helper.ts_** for each test suite. This will contain all the methods used in the respective test suite.
+
+```typescript
+import { expect, Page } from "@playwright/test";
+import { PO } from "../../../src/fixtures/pageObjects.ts";
+import { ENV } from "../../../src/utils/env.ts";
+
+export function loginHelpers(po: PO, page: Page) {
+  const logout = async (po: PO): Promise<void> => {
+    await po.dashPg.burgerMenuButton.click();
+    await po.dashPg.logoutSidebarButton.click();
+    await expect(page).toHaveURL(ENV.E2E_FRONT_URL);
+  };
+
+  return {
+    logout,
+}
+```
+
+### **Test File Example**
+
+```typescript
 // tests/login.spec.ts
 import { test } from "@playwright/test";
-import { LoginPage } from "../pages/LoginPage";
+import { loginHelpers } from "./helper.ts";
 
 test("successful login flow", async ({ page }) => {
   const loginPage = new LoginPage(page);
