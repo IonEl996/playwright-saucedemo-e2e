@@ -25,7 +25,7 @@ export class ShopPage {
     return this.page.locator('[data-test="inventory-item"]');
   }
   get itemImage() {
-    return this.page.locator('.inventory_item_img img');
+    return this.page.locator(".inventory_item_img img");
   }
   get itemName() {
     return this.page.locator('[data-test="inventory-item-name"]');
@@ -44,15 +44,25 @@ export class ShopPage {
     return this.page.locator('[data-test="add-to-cart-sauce-labs-bike-light"]');
   }
   get add2CartBoltTShirt() {
-    return this.page.locator('[data-test="add-to-cart-sauce-labs-bolt-t-shirt"]');
+    return this.page.locator(
+      '[data-test="add-to-cart-sauce-labs-bolt-t-shirt"]',
+    );
   }
   get add2CartFleece() {
-    return this.page.locator('[data-test="add-to-cart-sauce-labs-fleece-jacket"]');
+    return this.page.locator(
+      '[data-test="add-to-cart-sauce-labs-fleece-jacket"]',
+    );
   }
   get add2CartOnesie() {
     return this.page.locator('[data-test="add-to-cart-sauce-labs-onesie"]');
   }
   get add2AllThingsTShirt() {
-    return this.page.locator('[data-test="add-to-cart-test.allthethings()-t-shirt-(red)"]');
+    return this.page.locator(
+      '[data-test="add-to-cart-test.allthethings()-t-shirt-(red)"]',
+    );
+  }
+  // Sorting menu
+  get sortDropDown() {
+    return this.page.locator('[data-test="product-sort-container"]');
   }
 }

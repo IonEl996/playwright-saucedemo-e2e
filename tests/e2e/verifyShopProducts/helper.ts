@@ -12,7 +12,6 @@ interface InventoryItem {
 
 export function shopProductsHelper(po: PO) {
   const verifySingleInventoryItem = async (
-    //itemLocator: Locator,
     index: number,
   ): Promise<InventoryItem> => {
     const allNames = await po.shopPg.itemName.all();
@@ -119,9 +118,58 @@ export function shopProductsHelper(po: PO) {
     expect(itemNames).toEqual(expectedOrder);
   };
 
+  const selectSortOption = async (optionValue: string): Promise<void> => {
+    await po.shopPg.sortDropDown.selectOption(optionValue);
+  };
+
+  const verifyProductSorting = async (
+    sortType: "az" | "za" | "lohi" | "hilo",
+  ): Promise<void> => {
+    const uiNames = await po.shopPg.itemName.allTextContents();
+    const uiPricesRaw = await po.shopPg.itemPrice.allTextContents();
+    const uiPrices = uiPricesRaw.map((price) =>
+      parseFloat(price.replace("$", "")),
+    );
+    // Deep copy local expected array to avoid mutation side-effects
+    const sortedExpectedData = [...EXPECTED_ITEMS];
+    // Programmatically sort data to generate reference arrays & assert
+    switch (sortType) {
+      case "az": {
+        console.log("Sorting by name (A-Z)");
+        sortedExpectedData.sort((a, b) => a.name.localeCompare(b.name));
+        const expectedNames = sortedExpectedData.map((item) => item.name);
+        expect(uiNames).toEqual(expectedNames);
+        break;
+      }
+      case "za": {
+        console.log("Sorting by name (Z-A)");
+        sortedExpectedData.sort((a, b) => b.name.localeCompare(a.name));
+        const expectedNames = sortedExpectedData.map((item) => item.name);
+        expect(uiNames).toEqual(expectedNames);
+        break;
+      }
+      case "lohi": {
+        console.log("Sorting by price (low to high)");
+        sortedExpectedData.sort((a, b) => a.price - b.price);
+        const expectedPrices = sortedExpectedData.map((item) => item.price);
+        expect(uiPrices).toEqual(expectedPrices);
+        break;
+      }
+      case "hilo": {
+        console.log("Sorting by price (high to low)");
+        sortedExpectedData.sort((a, b) => b.price - a.price);
+        const expectedPrices = sortedExpectedData.map((item) => item.price);
+        expect(uiPrices).toEqual(expectedPrices);
+        break;
+      }
+    }
+  };
+
   return {
     verifyInventoryItems,
     verifyItemAgainstExpected,
     verifyItemOrder,
+    selectSortOption,
+    verifyProductSorting,
   };
 }
