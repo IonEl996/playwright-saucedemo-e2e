@@ -3,35 +3,24 @@ import { PO } from "../../../src/fixtures/pageObjects.ts";
 import { ENV } from "../../../src/utils/env.ts";
 import { Context } from "node:vm";
 
-interface LoginCredentials {
-  username: string | null;
-  password: string | null;
-}
-
 export function loginHelpers(po: PO, page: Page) {
-  const loginWithUser = async (
-    po: PO,
-    credentials: LoginCredentials,
-  ): Promise<void> => {
-    if (credentials.username !== null) {
-      await po.loginPg.usernameInputField.click();
-      await po.loginPg.usernameInputField.fill(credentials.username);
-    }
-    if (credentials.password !== null) {
-      await po.loginPg.passwordInputField.click();
-      await po.loginPg.passwordInputField.fill(credentials.password);
-    }
-    await po.loginPg.loginButton.click();
-  };
-
   const logout = async (po: PO): Promise<void> => {
-    await po.dashPg.burgerMenuButton.click();
-    await po.dashPg.logoutSidebarButton.click();
+    await po.shopPg.burgerMenuButton.click();
+    await po.shopPg.logoutSidebarButton.click();
     await expect(page).toHaveURL(ENV.E2E_FRONT_URL);
   };
 
-  const assertLoginSuccessful = async (page: Page): Promise<void> => {
+  const assertLoginSuccessful = async (po: PO, page: Page): Promise<void> => {
+    await page.waitForURL("**/inventory.html", { timeout: 10000 });
     await expect(page).toHaveURL(ENV.E2E_FRONT_URL + "/inventory.html");
+    await expect(po.shopPg.inventoryItem).toHaveCount(6);
+
+    const invItems = await po.shopPg.inventoryItem.all();
+    for (const item of invItems) {
+      await expect(item).toBeVisible();
+    }
+
+    console.log("✅ Login successful, saving session state...");
   };
 
   const checkLoginCookie = async (
@@ -76,7 +65,6 @@ export function loginHelpers(po: PO, page: Page) {
   };
 
   return {
-    loginWithUser,
     assertLoginSuccessful,
     logout,
     checkLoginCookie,
