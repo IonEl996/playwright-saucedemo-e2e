@@ -1,4 +1,5 @@
 import { Page, expect, chromium, firefox, webkit } from "@playwright/test";
+import { PO } from "../fixtures/pageObjects.ts";
 import { ENV } from "../utils/env.ts";
 
 type BrowserType = "chromium" | "firefox" | "webkit";
@@ -22,4 +23,11 @@ export const navigateToHomepageWithStorage = async (): Promise<void> => {
 export const navigateToHomepage = async (page: Page): Promise<void> => {
   await page.goto(ENV.E2E_FRONT_URL);
   await expect(page).toHaveTitle(/Swag Labs/);
+};
+
+export const navigateToCart = async (po: PO): Promise<void> => {
+  await po.shopPg.shoppingCartButton.click();
+
+  const cartPageTitle = po.shopCartPg.cartTitle;
+  await expect(cartPageTitle).toHaveText("Your Cart");
 };
