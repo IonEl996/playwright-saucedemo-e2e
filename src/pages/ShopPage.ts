@@ -37,32 +37,20 @@ export class ShopPage {
     return this.page.locator('[data-test="inventory-item-price"]');
   }
   // Add to cart buttons
-  get add2CartBackPack() {
-    return this.page.locator('[data-test="add-to-cart-sauce-labs-backpack"]');
+  get itemAddToCartButton() {
+    return this.page.locator('button:has-text("Add to cart")');
   }
-  get add2CartBikeLight() {
-    return this.page.locator('[data-test="add-to-cart-sauce-labs-bike-light"]');
-  }
-  get add2CartBoltTShirt() {
-    return this.page.locator(
-      '[data-test="add-to-cart-sauce-labs-bolt-t-shirt"]',
-    );
-  }
-  get add2CartFleece() {
-    return this.page.locator(
-      '[data-test="add-to-cart-sauce-labs-fleece-jacket"]',
-    );
-  }
-  get add2CartOnesie() {
-    return this.page.locator('[data-test="add-to-cart-sauce-labs-onesie"]');
-  }
-  get add2AllThingsTShirt() {
-    return this.page.locator(
-      '[data-test="add-to-cart-test.allthethings()-t-shirt-(red)"]',
-    );
+  get itemRemoveFromCartButton() {
+    return this.page.locator('button:has-text("Remove")');
   }
   // Sorting menu
   get sortDropDown() {
     return this.page.locator('[data-test="product-sort-container"]');
+  }
+  get shoppingCartButton() {
+    return this.page.locator('[data-test="shopping-cart-link"]');
+  }
+  get shoppingCartBadge() {
+    return this.page.locator('[data-test="shopping-cart-badge"]');
   }
 }

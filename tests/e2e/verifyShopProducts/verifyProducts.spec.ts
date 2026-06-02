@@ -39,8 +39,8 @@ test.describe("Shop tests", () => {
     const shopPg = shopProductsHelper(po);
 
     for (const suite of testCases) {
-        await shopPg.selectSortOption(suite.value);
-        await shopPg.verifyProductSorting(suite.type);
+      await shopPg.selectSortOption(suite.value);
+      await shopPg.verifyProductSorting(suite.type);
     }
   });
 });

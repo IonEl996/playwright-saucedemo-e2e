@@ -165,11 +165,91 @@ export function shopProductsHelper(po: PO) {
     }
   };
 
+  const getExpectedItemById = (productId: string): ExpectedItem => {
+    const item = EXPECTED_ITEMS.find((i) => i.productId === productId);
+    if (!item) {
+      throw new Error(
+        `Error: Product ID '${productId}' was not found in inventory-items.ts`,
+      );
+    }
+    return item;
+  };
+
+  const targetProductContainer = (productName: string) => {
+    return po.shopPg.inventoryItem.filter({
+      has: po.shopPg.itemName.getByText(productName, { exact: true }),
+    });
+  };
+
+  const addProductToCart = async (productName: string): Promise<void> => {
+    console.log(`Action: Adding "${productName}" to the shopping cart.`);
+
+    const container = targetProductContainer(productName);
+    const addToCartBtn = container.locator(po.shopPg.itemAddToCartButton);
+    await expect(addToCartBtn).toBeVisible();
+    await addToCartBtn.click();
+  };
+
+  const openProductPage = async (productName: string): Promise<void> => {
+    console.log(`Action: Open "${productName}" page.`);
+    const container = targetProductContainer(productName);
+    const product = container.locator(po.shopPg.itemName);
+    await product.click();
+  };
+
+  const verifyProductButtonState = async (
+    productName: string,
+    state: "added" | "removed",
+  ): Promise<void> => {
+    const container = targetProductContainer(productName);
+    const removeBtn = container.locator(po.shopPg.itemRemoveFromCartButton);
+    const add2CartBtn = container.locator(po.shopPg.itemAddToCartButton);
+
+    if (state === "added") {
+      await expect(removeBtn).toBeVisible();
+    } else {
+      await expect(add2CartBtn).toBeVisible();
+    }
+  };
+
+  const removeProductFromCart = async (productName: string): Promise<void> => {
+    console.log(`Action: Removing "${productName}" from shopping cart`);
+
+    const container = targetProductContainer(productName);
+    const removeBtn = container.locator(po.shopPg.itemRemoveFromCartButton);
+    await expect(removeBtn).toBeVisible();
+    await removeBtn.click();
+  };
+
+  const verifyShoppingCartBadge = async (
+    expectedCount: number,
+  ): Promise<void> => {
+    console.log(
+      `Assertion: Verify the cart badge display count: ${expectedCount}`,
+    );
+
+    if (expectedCount === 0) {
+      await expect(po.shopPg.shoppingCartBadge).toBeHidden();
+      console.log("No items in the cart.");
+    } else {
+      await expect(po.shopPg.shoppingCartBadge).toHaveText(
+        expectedCount.toString(),
+      );
+      console.log(`${expectedCount} items in the cart.`);
+    }
+  };
+
   return {
     verifyInventoryItems,
     verifyItemAgainstExpected,
     verifyItemOrder,
     selectSortOption,
     verifyProductSorting,
+    addProductToCart,
+    getExpectedItemById,
+    verifyProductButtonState,
+    removeProductFromCart,
+    verifyShoppingCartBadge,
+    openProductPage,
   };
 }
