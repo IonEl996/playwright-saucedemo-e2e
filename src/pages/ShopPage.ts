@@ -27,6 +27,10 @@ export class ShopPage {
   get itemImage() {
     return this.page.locator(".inventory_item_img img");
   }
+  get alternateItemImage() {
+    return (productId: string) =>
+      this.page.locator(`[data-test="item-${productId}-img"]`);
+  }
   get itemName() {
     return this.page.locator('[data-test="inventory-item-name"]');
   }

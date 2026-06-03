@@ -8,6 +8,13 @@ import { EXPECTED_ITEMS } from "./data/inventory-items.ts";
 
 test.describe.configure({ mode: "serial" });
 
+const testCases = [
+  { value: "az", type: "az" as const, label: "Name (A to Z)" },
+  { value: "za", type: "za" as const, label: "Name (Z to A)" },
+  { value: "lohi", type: "lohi" as const, label: "Price (low to high)" },
+  { value: "hilo", type: "hilo" as const, label: "Price (high to low)" },
+];
+
 test.describe("Shop tests", () => {
   test.beforeEach(async ({ po, page }) => {
     await navigateToHomepage(page);
@@ -16,12 +23,6 @@ test.describe("Shop tests", () => {
       password: ENV.E2E_ALL_USER_PSWD,
     });
   });
-  const testCases = [
-    { value: "az", type: "az" as const, label: "Name (A to Z)" },
-    { value: "za", type: "za" as const, label: "Name (Z to A)" },
-    { value: "lohi", type: "lohi" as const, label: "Price (low to high)" },
-    { value: "hilo", type: "hilo" as const, label: "Price (high to low)" },
-  ];
 
   test("Verify all shop items are displayed correctly in the shop", async ({
     po,
@@ -41,6 +42,27 @@ test.describe("Shop tests", () => {
     for (const suite of testCases) {
       await shopPg.selectSortOption(suite.value);
       await shopPg.verifyProductSorting(suite.type);
+    }
+  });
+
+  test("Verify all items page details", async ({ po }) => {
+    const shopPg = shopProductsHelper(po);
+
+    const allShopItems = await po.shopPg.inventoryItem.all();
+    const expectedItems = EXPECTED_ITEMS;
+
+    for (let i = 0; i < allShopItems.length; i++) {
+      const currentItem = shopPg.getExpectedItemById(
+        expectedItems[i].productId,
+      );
+      await shopPg.openProductPage(currentItem.name);
+
+      const actualItemDetails = await shopPg.getItemPageDetails();
+      await shopPg.verifyItemPageDetailsAgainstExpected(
+        actualItemDetails,
+        expectedItems[i],
+      );
+      await po.singleItmPg.backToProductsBtn.click();
     }
   });
 });

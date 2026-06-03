@@ -15,7 +15,4 @@ export class ShoppingCartPage {
   get itemQty() {
     return this.page.locator('[data-test="item-quantity"]');
   }
-  get removeItemButton() {
-    return this.page.locator('[data-test="remove-sauce-labs-backpack"]');
-  }
 }

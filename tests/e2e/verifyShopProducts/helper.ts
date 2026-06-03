@@ -22,10 +22,19 @@ export function shopProductsHelper(po: PO) {
     const nameLocator = allNames[index];
     const descLocator = allDescs[index];
     const priceLocator = allPrices[index];
-    const imgLocator = allImages[index];
 
+    // 1. Resolve and validate the name first to extract the criteria needed for the dynamic image locator
     await expect(nameLocator).toBeVisible();
-    const name = await nameLocator.textContent();
+    const rawName = await nameLocator.textContent();
+    const name = rawName?.trim() || "";
+    // 2. Map the UI text name to the reference items data array to extract the productId
+    const matchedExpectedItem = EXPECTED_ITEMS.find(
+      (item) => item.name === name,
+    );
+    // 3. Dynamic Locator Integration with an internal defensive fallback
+    const imgLocator = matchedExpectedItem
+      ? po.shopPg.alternateItemImage(matchedExpectedItem.productId)
+      : allImages[index];
 
     await expect(descLocator).toBeVisible();
     const description = await descLocator.textContent();
@@ -105,6 +114,88 @@ export function shopProductsHelper(po: PO) {
       expect(actual.imageUrl).toContain(expected.imageUrl);
       expect(actual.imageAlt).toBe(expected.imageAlt);
     }
+
+    console.log(`✅ All verifications passed for: ${expected.name}`);
+  };
+
+  const verifyItemDetails = async (): Promise<InventoryItem> => {
+    const itemName = await po.shopPg.itemName;
+    const itemDesc = await po.shopPg.itemDescription;
+    const itemPrice = await po.shopPg.itemPrice;
+    const itemImage = await po.shopPg.itemImage;
+
+    await expect(itemName).toBeVisible();
+    const rawName = await itemName.textContent();
+    const name = rawName?.trim() || "";
+    const matchedExpectedItem = EXPECTED_ITEMS.find(
+      (item) => item.name === name,
+    );
+
+    const imgLocator = matchedExpectedItem
+      ? po.shopPg.alternateItemImage(matchedExpectedItem.productId)
+      : itemImage;
+
+    await expect(itemDesc).toBeVisible();
+    const description = await itemDesc.textContent();
+
+    await expect(itemPrice).toBeVisible();
+    const priceText = await itemPrice.textContent();
+    const price = parseFloat(priceText?.replace("$", "") || "0");
+
+    // Verify price is valid
+    expect(price).toBeGreaterThan(0);
+    expect(priceText).toMatch(/^\$\d+\.\d{2}$/);
+
+    // Verify image
+    await expect(imgLocator).toBeVisible();
+    const imageUrl = await imgLocator.getAttribute("src");
+    const imageAlt = await imgLocator.getAttribute("alt");
+
+    // Verify image attributes
+    expect(imageUrl).toBeTruthy();
+    expect(imageUrl).toMatch(/\.(jpg|jpeg|png|gif|webp)$/i);
+    expect(imageAlt).toBeTruthy();
+    expect(imageAlt).toBe(name); // Alt should match product name
+
+    // Verify image is loaded
+    const naturalWidth = await imgLocator.evaluate(
+      (img: any) => img.naturalWidth,
+    );
+    expect(naturalWidth).toBeGreaterThan(0);
+
+    const verifiedItem: InventoryItem = {
+      name: name || "",
+      description: description || "",
+      price,
+      imageUrl: imageUrl || "",
+      imageAlt: imageAlt || "",
+    };
+
+    console.log(`✓ Verified: ${name} - $${price}`);
+
+    return verifiedItem;
+  };
+
+  const getItemPageDetails = async (): Promise<InventoryItem> => {
+    const inventoryItem = po.shopPg.inventoryItem;
+
+    console.log(`Found ${inventoryItem}.`);
+    expect(inventoryItem).toBeVisible();
+
+    return verifyItemDetails();
+  };
+
+  const verifyItemPageDetailsAgainstExpected = async (
+    actual: InventoryItem,
+    expected: ExpectedItem,
+  ): Promise<void> => {
+    console.log(`\n🔍 Detailed verification of: ${actual.name}`);
+
+    expect(actual.name).toBe(expected.name);
+    expect(actual.description).toBe(expected.description);
+    expect(actual.price).toBe(expected.price);
+    expect(actual.imageUrl).toContain(expected.imageUrl);
+    expect(actual.imageAlt).toBe(expected.imageAlt);
 
     console.log(`✅ All verifications passed for: ${expected.name}`);
   };
@@ -240,6 +331,7 @@ export function shopProductsHelper(po: PO) {
   };
 
   return {
+    verifySingleInventoryItem,
     verifyInventoryItems,
     verifyItemAgainstExpected,
     verifyItemOrder,
@@ -251,5 +343,8 @@ export function shopProductsHelper(po: PO) {
     removeProductFromCart,
     verifyShoppingCartBadge,
     openProductPage,
+    verifyItemDetails,
+    getItemPageDetails,
+    verifyItemPageDetailsAgainstExpected,
   };
 }

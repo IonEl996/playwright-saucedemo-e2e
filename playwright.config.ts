@@ -11,6 +11,7 @@ export default defineConfig({
   use: {
     baseURL: ENV.E2E_FRONT_URL,
     trace: "on-first-retry",
+    testIdAttribute: "data-test",
   },
   projects: [
     {
@@ -18,12 +19,12 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
     },
     {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      name: "webkit",
+      use: { ...devices["Desktop Safari"] },
     },
   ],
 });
